@@ -1,0 +1,161 @@
+\documentclass{article}
+\usepackage{graphicx,fancyhdr,amsmath,amssymb,amsthm,subfig,url,hyperref,multirow,enumerate,array,float}
+\usepackage[margin=1in]{geometry}
+
+%----------------------- Macros and Definitions --------------------------
+
+%%% FILL THIS OUT
+\newcommand{\studentname}{Keyan Pishdadian, Apoorva Gupta}
+\newcommand{\uwid}{keyanp, gapoorva}
+\newcommand{\exerciseset}{Exercise Set 2}
+%%% END
+
+
+
+\renewcommand{\theenumi}{\bf \Alph{enumi}}
+
+%\theoremstyle{plain}
+%\newtheorem{theorem}{Theorem}
+%\newtheorem{lemma}[theorem]{Lemma}
+
+\fancypagestyle{plain}{}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[RO,LE]{\sffamily\bfseries\large University of Washington}
+\fancyhead[LO,RE]{\sffamily\bfseries\large  Incentives in Computer Science}
+\fancyfoot[LO,RE]{\sffamily\bfseries\large \studentname: \uwid @uw.edu}
+\fancyfoot[RO,LE]{\sffamily\bfseries\thepage}
+\renewcommand{\headrulewidth}{1pt}
+\renewcommand{\footrulewidth}{1pt}
+
+\graphicspath{{figures/}}
+
+% Paragraph indenting is ugly.
+% \setlength{\parindent}{0ex}
+
+%-------------------------------- Title ----------------------------------
+
+\title{\textbf{Solutions to \exerciseset}}
+\author{\studentname \qquad Student ID: \uwid}
+
+%--------------------------------- Text ----------------------------------
+
+\begin{document}
+\maketitle
+
+\section*{Exercise 1}
+
+As a general fact the set of Nash equilibria of the original game coincides with the set of Nash equilibria for the reduced game, so we can first simplify the game using \emph{iterated deletion of dominated strategies}. The row player has no incentive to play $C$ because it is weakly dominated by $A$, so we eliminate it. The column player has no incentive to play $E$ because it is weakly dominated by $F$, so we eliminate it. The resulting reduced game is:
+
+\begin{table}[H]
+\centering
+  \setlength{\extrarowheight}{2pt}
+  \begin{tabular}{*{4}{c|}}
+    \multicolumn{2}{c}{} & \multicolumn{2}{c}{}\\\cline{3-4}
+    \multicolumn{1}{c}{} &  & $D$  & $F$ \\\cline{2-4}
+    \multirow{2}*{}  & $A$ & $(5,1)$ & $(2,3)$ \\\cline{2-4}
+    & $B$ & $(1,8)$ & $(3,0)$ \\\cline{2-4}
+  \end{tabular}
+\caption{Reduced payoff matrix after iterated deletion of dominated strategies.}
+\end{table}
+
+There is no pure Nash equilibrium so we compute a mixed strategy Nash equilibrium using the principle of indifference.
+If column player plays $D$ with probability $p$ we compute the value of $p$ so as to make row player indifferent between her options:
+\[ 5p + 2(1 - p) = p + 3(1 - p) \]
+Solving for $p$ we get $p = 1/5$. If row player plays $A$ with probability $q$ we compute the value of $q$ so as to make column player indifferent between her options:
+\[ q + 8(1 - q) = 3q \]
+Solving for $q$ we get $q = 4/5$.
+
+Thus the pair of strategies $p = 1/5$ and $q = 4/5$ form the Nash equilibrium. We know this because each strategy is a best response to the other as given by our use of the principle of indifference. Neither player has incentive to change their strategy unilaterally, because doing so would make the opposite player have a greater payoff for one of their actions. Using the pair of strategies we can compute the payoff to each player:
+\begin{itemize}
+    \item row player - \emph{payoff} $= 3p + 2$ where $p = 1/5$, \emph{payoff}$= 2.6$
+    \item column player - \emph{payoff} $= q + 8(1 - q)$ where $q = 4/5$, \emph{payoff}$= 2.4$
+\end{itemize}
+
+\section*{Exercise 2}
+
+\begin{table}[H]
+\centering
+  \setlength{\extrarowheight}{2pt}
+  \begin{tabular}{*{4}{c|}}
+    \multicolumn{2}{c}{} & \multicolumn{2}{c}{}\\\cline{3-4}
+    \multicolumn{1}{c}{} &  & $C$  & $D$ \\\cline{2-4}
+    \multirow{2}*{}  & $A$ & $(3,3)$ & $(2,2)$ \\\cline{2-4}
+    & $B$ & $(1,5)$ & $(5,5)$ \\\cline{2-4}
+  \end{tabular}
+\caption{Payoff matrix for a game with two pure Nash equilibria.}
+\label{table:ex2payoff}
+\end{table}
+
+\begin{enumerate}[i.]
+    \item %i
+    Strategy $A$ is a best response when column player plays $C$, for payoff 3. While strategy $B$ is a best response when column player plays $D$, for payoff 5. Therefore neither actions weakly dominant the other.
+
+    \item %ii
+    Column player has a weakly dominant strategy $D$ because there exists a strategy $C$ which does at least as well as $D$, and yields strictly more payoff under some strategy profile for row player ($A$). If we eliminate strategy $D$ the resulting payoff matrix is:
+        \begin{table}[H]
+        \centering
+          \setlength{\extrarowheight}{2pt}
+          \begin{tabular}{*{4}{c|}}
+            \multicolumn{1}{c}{} & \multicolumn{1}{c}{}\\\cline{3-3}
+            \multicolumn{1}{c}{} &  & $C$ \\\cline{2-3}
+            \multirow{1}*{}  & $A$ & $(3,3)$ \\\cline{2-3}
+            & $B$ & $(1,5)$ \\\cline{2-3}
+          \end{tabular}
+          \caption{Reduced payoff matrix after deletion of strategy $D$.}
+        \end{table}
+
+    Where now the row player has a weakly dominated pure strategy $B$ (in fact it is strictly dominated), giving a pure Nash equilibrium of $(A, C)$.
+
+    \item %iii
+    Referring back to Table \ref{table:ex2payoff}, there is a second pure Nash equilibrium of $(B, D)$, where $B$ and $D$ are both best responses to each other.
+
+    \item %iv
+    As noted in (ii) the Nash equilibrium from iterated deletion of dominated strategies is $(A, C)$ which gives a payoff of $(3, 3)$. The second pure Nash equilibrium does not result from iterated deletion of dominated strategies and as noted in (iii) is $(B, D)$ with payoff of $(5, 5)$. It is the Pareto optimal outcome and is strictly better for both players, maximizing both players' payoffs by providing $+2$ payoff for both players over the first equilibrium.
+\end{enumerate}
+
+\section*{Exercise 3}
+
+\begin{table}[H]
+\centering
+  \setlength{\extrarowheight}{2pt}
+  \begin{tabular}{*{4}{c|}}
+    \multicolumn{2}{c}{} & \multicolumn{2}{c}{Player II (even)}\\\cline{3-4}
+    \multicolumn{1}{c}{} &  & $2$  & $3$ \\\cline{2-4}
+    \multirow{2}*{Player 1 (odd)}  & $2$ & $(-4,4)$ & $(6,-6)$ \\\cline{2-4}
+    & $3$ & $(6,-6)$ & $(-9,9)$ \\\cline{2-4}
+  \end{tabular}
+\caption{Payoff matrix zero-sum number calling game.}
+\end{table}
+
+To find the optimal strategy we find the Nash equilibrium, because in a zero-sum game the Nash equilibrium is the optimal strategy. Because there is no pure Nash equilibrium, we compute the mixed strategy Nash equilibrium using the principle of indifference. If Player I plays $2$ with probability $p$ we compute the value of $p$ so as to make Player II indifferent between her options:
+\[ 4p + (-6)(1 - p) = -6p + 9(1 - p) \]
+Solving for $p$ we get $p = 3/5$. If Player II plays $2$ with probability $q$ we compute the value of $q$ so as to make Player I indifferent between his options:
+\[ -4q + 6(1 - q) = 6q + (-9)(1 - p) \]
+Solving for $q$ we get $q = 3/5$. Calculating the payoff for either player gives the value of the game. For $p= 3/5$ calculating the expected payoff for Player II:
+\[ -4(3/5) + 6(1 - 3/5) = 0 \]
+
+We conclude the value of the game is 0, meaning it is a "fair game".
+
+\section*{Exercise 4}
+\begin{enumerate}[a.]
+    \item %a.
+    (\emph{Up}, \emph{Left}) is a pure Nash equilibrium which provides Leader with the payoff $1$.
+
+    \item %b.
+    If Leader commits to \emph{Down} then Follower's best response will be \emph{Left}, which provides Leader with the payoff $2$.
+
+    \item %c.
+    The only other outcome that would provide higher payoff to Leader than (\emph{Down}, \emph{Left}) (from ii) is (\emph{Up}, \emph{Right}). So the goal is to construct a mixed strategy for Leader that makes the Follower play \emph{Right}. If we say that Leader will play \emph{Down} with probability $p$, then we want to solve for $p$ where the expected payoff for Follower playing \emph{Right} is higher:
+    \begin{align*}
+        0(1 - p) + p &> 1(1 - p) + 0p \\
+        = p &> 1 - p \\
+        = p &> 1/2
+    \end{align*}
+
+    As long as Leader commits to playing \emph{Down} with probability $p > 1/2$, Follower will play \emph{Right}. Now we know that Leader wants to maximize their play of \emph{Up} because this gives the best payoff, while still obeying to the inequality computed above. Leader will likely select $p = 1/2 + \epsilon$ to achieve this.
+
+    While Leader's payoff before was just $2$, with this strategy it is $2p + 3(1 - p)$. For example if we set $p = 0.51$ we see Leader's payoff is $2(0.51) + 3(1 - 0.51) = 2.49$, higher than committing to playing \emph{Down}.
+\end{enumerate}
+
+\end{document}

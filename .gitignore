@@ -4,3 +4,6 @@
 *.swo
 .*.swo
 tags
+*.out
+*.log
+*.aux
