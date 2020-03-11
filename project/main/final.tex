@@ -21,27 +21,50 @@
 Provider decision making plays a critical role in patient outcomes and national healthcare spending. Creating robust incentive structures to underlie provider deicision making are vital to ensuring the delivery of high quality care and adequately managed costs. Despite this these incentive structures are poorly designed both financially and from a provider risk perspective. In this paper I analyze the inefficiencies and sub-optimal equilibria that result from the use of classic incentive systems, then extend recent ideas to propose a hybrid incentive structure that increases provider profits, improves patient outcomes, and reduces wasteful spending.
 \end{abstract}
 
-
 \section*{Introduction}
+Healthcare is a socially and economically important aspect of the modern United States. Roughly 1/6th of US consumer spending \cite{econharvard} and ${\sim}48$\% of federal spending \cite{federalspend} goes towards some form of healthcare and the success, efficiency, and outcomes of this market reflect directly on the viability and happiness of American citizens and the US economy. The decision making of physicians plays a integral role in this system, with roughly 80\% of all expenditure being a result of physicians' decisions \cite{trust}. One becomes concerned with this control when comparing US healthcare expenditure to other developed countries (Fig. \ref{fig:usspend}), just why is expenditure so much higher in the US without better outcomes \cite{acoecon}? At the root of the issue is that the healthcare market is unlike other normal markets where there is a buyer and a seller, with the buyer fully knowing what it is they want and having transparency into the price being offered by the seller \cite{msdt}. Rather, in this market there are many agents interacting directly or indirectly within a single healthcare transaction.
 
-Healthcare is a socially and economically important aspect of the modern United States. Roughly 1/6th of US consumer spending \cite{econharvard} and ${\sim}48$\% of federal spending \cite{federalspend} goes towards some form of healthcare and the success, efficiency, and outcomes of this market reflect directly on the viability and happiness of American citizens and the US economy. The decision making of physicians plays a integral role in this system, with roughly 80\% of all expenditure being a result of physicians' decisions \cite{trust}. One becomes concerned with this control when comparing US healthcare expenditure to other developed countries (Fig. \ref{fig:usspend}), just why is expenditure so much higher in the US? At the root of the issue is that the healthcare market is unlike other normal markets where there is a buyer and a seller, with the buyer fully knowing what it is they want and having transparency into the price being offered by the seller \cite{msdt}. Rather, in this market there are many agents interacting directly or indirectly within a single healthcare transaction.
-
-This results in a complex web of interdependencies between the agents (Fig. \ref{fig:agentdep}) which significantly complicates construction of effective incentive structures. Additionally the patient has little control in their outcomes aside from selecting a provider. In fact, the patient-provider relationship is a clear example of a \emph{principle-agent problem} \cite{principle} where the provider (the ``agent") must make diagnosis and care decisions that impact the patient (the ``principle"), but the provider/agent is motivated to act in their own best interests and not in the best interest of the patient/principle \cite{msdt}. Simultaneously, the provider is engaged in a game with other providers that closely resembles a ``prisoners' dilemmas", ultimately the decision making of any one provider has externalities on the health of the entire patient population, with a future decrease in overall health leading to an increase in the required volume of care to sustain proper health \cite{blended} affecting all providers.
+This results in a complex web of interdependencies between the agents (Fig. \ref{fig:agentdep}) which significantly complicates construction of effective incentive structures. Additionally the patient has little control in their outcomes aside from selecting a provider. In fact, the patient-provider relationship is a clear example of a \emph{principle-agent problem} \cite{principle} where the provider (the ``agent") must make diagnosis and care decisions that impact the patient (the ``principle"), but the provider/agent is motivated to act in their own best interests and not in the best interest of the patient/principle \cite{msdt}. Simultaneously, the provider is engaged in a game with other providers that closely resembles a ``prisoners' dilemmas", ultimately the decision making of any one provider has externalities on the health of the entire patient population, with a future decrease in overall health leading to an increase in the required volume of care to sustain proper health \cite{blended}.
 
 In this paper I present each of the prevailing provider incentive structures, examine their benefits and inefficiencies, then use an adapted simplified model to formalize the resulting equilibria reached in each system. I briefly review the prisioners' dilemma model as a framework for analyzing provider decision making. I then extend recent ideas from Accountable Care Organizations (ACOs) to propose and analyze a hybrid incentive structure that increases provider profits and improves patient outcomes.
 
 \begin{figure}[H]
+\includegraphics[height=7cm]{usspend}
+\centering
+\caption{US healthcare expenditure is significantly higher than that of other developed countries \cite{econharvard}.}
+\label{fig:usspend}
+\end{figure}
+
+\section*{Setup}
+
+\subsection*{Agents}
+To begin analysis of the current state of healthcare we must first examine who is involved and what they are optimizing for. Because the scope of this system is large, I limit the number of agents and make some assumptions about their motivations to simplify the future model. An overview of the agents is provided in Fig. \ref{fig:agentdep}, and they are summarized below.
+
+\paragraph*{Payer:}The payer can be thought of as both an individual patient or alternatively some entity which is responsible for paying for services rendered to individuals it is responsible for. Generally the latter case would be an employeer or government which is providing health insurance to others at cost. While insurance companies are also considered a payer, they are outside the scope of this work. Note that oftentimes there are mutiple payees involved in a single healthcare transaction, although here we assume that they are all aligned on their goals.
+
+Ultimately the payer seesk to minimize cost, while maximizing quality of service. In the case of a patient the desire to maximize quality of service is self-explanatory, and in the case of an employeer/government the intention is that high quality of service will mean higher general health and less future demand for healthcare, which drives down cost.
+
+\paragraph*{Provider:}These are any individuals rendering services for payers. Generally we can think of providers as physicians. Providers seek to maximize revenue to themselves and also minimizing financial and professional risk (e.g. malpratice lawsuits, increased cost of caring for patient with worsened condition)\footnote{In order to simplify the model I ignore any altruistic behavior and moral incentives that I imagine (and hope) are present to some extent.}.
+
+The provider is the central agent in this model because as mentioned previously, their decisions account for ${\sim}80$\% of healthcare spending \cite{trust}. Importantly the payoff of any one provider is influenced by the collective behavior of other providers in the system. A provider may choose to render low quality service and thus negatively affect the health of a patient, through this they can impart negative externalities on other providers.
+
+\paragraph*{Hospital:}A hospital manages the compensation of providers and negotiates with payers to determine costs. Hospitals seek to maximize revenue by minimizing cost. Traditionally this also means maximizing volume of services rendered while minimizing quality of those services, but this fact can vary with the compensation structure being used.
+
+\begin{figure}[H]
 \includegraphics[height=7cm]{agentdep}
 \centering
-\caption{Agent interdepence diagram which shows the complex network of interactions between patients (Payer), providers (Physician), and hospitals. In this work I focus on controlling the decision making process (relations $1$ and $2$) and patient health outcomes and cost (relation $4$) \cite{msdt}.}
+\caption{Agent interdepence diagram which shows the complex network of interactions between payers, providers (Physician), and hospitals. In this work I focus on controlling the provider decision making process (relations $1$ and $2$) as a means of improving payer health outcomes and cost (relation $4$) \cite{msdt}.}
 \label{fig:agentdep}
 \end{figure}
 
-\section*{Background}
+\subsection*{Incentive Modeling}
+In order to create a framework to analyze payoffs in the existing and proposed payment models the following set of notation is introduced adapated from \cite{blended}. 
+
+\section*{Existing Payment Models}
 In this section I review the two major incentive structures used for provider payment, \textbf{fee-for-service} and \textbf{capitation}. Discussion of the issues with each structure gives motivation to understanding the novel payment structure used by ACOs.
 
 \subsection*{Fee-for-service}
-This model is most familar to anyone who has interfaced with US healtcare. Here a provider is payed for each service rendered (e.g. surgery, office visit). Hence the payment to the provider is a direct function of the volume of services provided. Of course here the conflict of interest is clear that providers are incentivized to provide a high volume of low quality and high cost services, regardless of need. Aside from ethical considerations, the outcome of the patient has no bearing on the payoff of the provider. This observation is not surprising given the principle-agent backdrop coloring this relationship, and this has been documented an expectation of patients and other providers alike \cite{econharvard}\cite{overtreat}.
+This model is most familar to anyone who has interfaced with US healtcare. Here a provider is payed for each service rendered (e.g. surgery, office visit). Hence the payment to the provider is a direct function of the volume of services provided. Of course a clear conflict of interest is presented, providers are incentivized to provide a high volume of low quality and high cost services, regardless of need. Aside from ethical considerations, the outcome of the patient has no bearing on the payoff of the provider. This observation is not surprising given the principle-agent backdrop coloring this relationship, and this has been documented an expectation of patients and other providers alike \cite{econharvard}\cite{overtreat}.
 
 So what does this method get right? That same indifference to cost that begets high volume service may also allows access to expensive services that may give good results but have low probability of success. When providers do not fear increased spending then they are free to explore new treatment methods, equipment, medications, and procedures.
 
@@ -59,19 +82,17 @@ An ACO is a group of providers who choose to join that organization and together
     \text{Bonus} = \max (0, 0.5 * (\text{Spending Benchmark} - \text{Actual Spending}) * \text{Quality Score})
 \end{equation}
 
-This incentive structure has some nice intuitive properties. The spending benchmark and associated savings bonus escape incentives to overspend seen in the fee-for-service model, while the use of a quality score avoids the natural best response of underspending observed in the capitation model and which would likely occur here as well.
+This incentive structure has some nice intuitive properties. The spending benchmark and associated savings bonus escape incentives to overspend seen in the fee-for-service model, while the use of a quality score avoids the natural best response of underspending observed in the capitation model and which would likely occur here as well. And yet ACOs are not the final answer.
+
+//TODO
+\begin{itemize}
+    \item Financial side effects - hospitals use sub-optimal drugs that don't apply to the benchmark calculation \cite{acoethics}.
+    \item Bonus sharing - hospitals control the savings bonus, how to distribute it is complicated and prone to hospitals acting in their own self-interest \cite{inflation}. Additionally there is no aspect of the design that rewards good actors and penalizes bad actors. ACOs are left to their own decisions on how to appropriately compensate providers that have postive externalities on the system.
+    \item Increase in power - the ACO system leads itself to large groups of providers/hospitals organizing and having increased market share. With this size comes the ability to control the market and raise prices for payers. This may even entirely offset any expected savings \cite{acoecon}.
+    \item Complexity - //TODO
+\end{itemize}
 
 \section*{Modeling Incentives}
-
-\subsection*{Agents}
-I summarize these agents below\footnote{In order to simplify the model I ignore any altruistic behavior and moral incentives that I imagine (and hope) are present to some extent.}:
-
-\begin{itemize}
-    \item \textbf{patient}: who seeks to minimize cost to themselves, while maximizing quality of service
-    \item \textbf{provider}: who seeks to maximize revenue to themselves, while minimizing volume of services rendered, and also minimizing financial and professional risk (e.g. malpratice lawsuits, increased cost of caring of patient with worsened condition)
-    \item \textbf{hospital}: who seeks to maximize revenue, while minimizing cost and volume of service
-    \item \textbf{other providers}: who act the same as the main provider, but whose actions have positive or negative externalities on the global wellbeing of the patient population
-\end{itemize}
 
 \subsection*{Setup}
 
@@ -103,13 +124,6 @@ For a thorough treatment of the prisoners' dilemma, refer to any number of game 
 %--------------------------------- Figures ----------------------------------
 
 \begin{figure}
-\includegraphics[height=7cm]{usspend}
-\centering
-\caption{US healthcare expenditure is significantly higher than that of other developed countries \cite{econharvard}.}
-\label{fig:usspend}
-\end{figure}
-
-\begin{figure}
 \includegraphics[height=7cm]{overtreat}
 \centering
 \caption{Provider responses when surveyed and asked what percentage of other physicians they think perform uneeded procedures financial gain \cite{overtreat}.}
@@ -132,16 +146,8 @@ Mankiw NG. (2017) The Economics of Healthcare.
 \bibitem{trust}
 Djulbegovic, Benjamin \& Hozo, Iztok \& Ioannidis, John. (2014). Modern health care as a game theory problem. European Journal of Clinical Investigation. 45. 10.1111/eci.12380
 
-\bibitem{tim}
-Roughgarden, T. (2016). Asymmetric Information and Reputation Systems. http://timroughgarden.org/f16/l/l12.pdf
-
 \bibitem{overtreat}
 Lyu H, Xu T, Brotman D, Mayer-Blackwell B, Cooper M, Daniel M, et al. (2017). Overtreatment in the United States. PLoS ONE 12(9): e0181970. https://doi.org/10.1371/journal.pone.0181970
-
-% 1
-% Cite as complicated approach by modifying how hospitals bill for services
-\bibitem{inflation}
-Agee, M.D., Gates, Z. (2013). Lessons from Game Theory about Healthcare System Price Inflation. Appl Health Econ Health Policy 11, 45–51. https://doi.org/10.1007/s40258-012-0003-z
 
 %4
 \bibitem{blended}
@@ -163,8 +169,23 @@ Redding, K. (2018). Participation and Performance in Accountable Care Organizati
 \bibitem{capfees}
 Iezzoni, Lisa I. et al. (1998). Paying More Fairly for Medicare Capitated Care. New England Journal of Medicine. https://doi.org/10.1056/NEJM199812243392613
 
+\bibitem{acoecon}
+Blackstone, E. A., \& Fuhr, J. P., Jr (2016). The Economics of Medicare Accountable Care Organizations. American health \& drug benefits, 9(1), 11–19.
+
 \bibitem{cms}
 https://www.cms.gov/Medicare/Medicare-Fee-for-Service-Payment/sharedsavingsprogram/Downloads\-/2018-and-2019-quality-benchmarks-guidance.pdf
+
+% 1
+% Cite as complicated approach by modifying how hospitals bill for services
+\bibitem{inflation}
+Agee, M.D., Gates, Z. (2013). Lessons from Game Theory about Healthcare System Price Inflation. Appl Health Econ Health Policy 11, 45–51. https://doi.org/10.1007/s40258-012-0003-z
+
+\bibitem{acoethics}
+Virtual Mentor. 2013;15(2):156-161. doi: 10.1001/virtualmentor.2013.15.2.pfor1-1302.
+
+% \bibitem{tim}
+% Roughgarden, T. (2016). Asymmetric Information and Reputation Systems. http://timroughgarden.org/f16/l/l12.pdf
+
 
 \end{thebibliography}
 
