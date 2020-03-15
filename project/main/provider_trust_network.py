@@ -28,36 +28,66 @@ bonus_rate = {VolumeAction.HIGH: 0, VolumeAction.LOW: 3}
 trust_score_delta = {
     QualityAction.HIGH: 2,
     QualityAction.LOW: -2,
-    VolumeAction.HIGH: -2,
+    VolumeAction.HIGH: -3,
     VolumeAction.LOW: 0,
 }
 
 
 class Provider:
     def __init__(
-        self, name: str, volume_action: VolumeAction,
-        quality_action: QualityAction,
+        self, name: str,
+        # Tuple of which action to take for how many rounds.
+        volume_actions: List[Tuple[VolumeAction, int]],
+        # Tuple of which action to take for how many rounds.
+        quality_actions: List[Tuple[QualityAction, int]],
     ):
         self.name = name
-        self.volume = volume_action
-        self.quality = quality_action
+        self.volume_actions = volume_actions
+        self.quality_actions = quality_actions
         # Assigned trust score for each round participated in.
         self.trust_by_round = []
 
+    def update_volume_quality_actions(self):
+        self.volume = self.set_volume()
+        self.quality = self.set_quality()
+
+    def set_volume(self):
+        ret_val = self.volume_actions[0][0]
+        if self.volume_actions[0][1] is not None:
+            self.volume_actions[0] = (self.volume_actions[0][0], self.volume_actions[0][1] - 1)
+            if self.volume_actions[0][1] < 1:
+                del self.volume_actions[0]
+
+        return ret_val
+
+    def set_quality(self):
+        ret_val = self.quality_actions[0][0]
+        if self.quality_actions[0][1] is not None:
+            self.quality_actions[0] = (self.quality_actions[0][0], self.quality_actions[0][1] - 1)
+            if self.quality_actions[0][1] < 1:
+                del self.quality_actions[0]
+
+        return ret_val
+
 
 class Simulation:
-    def __init__(self, chi: float, providers: List[Provider]):
+    def __init__(self, chi: float, providers: List[Provider], strategy_string: str):
         self.chi = chi
         self.providers = providers
-        # The maximum possible trust score (not scaled) for each round.
-        self.unscaled_t_max_by_round: List[float] = [
-            trust_score_delta[QualityAction.HIGH] + trust_score_delta[VolumeAction.LOW],
-        ]
+        self.payoffs_by_round = []
+        self.strategy_string = strategy_string
 
-    def run(self, rounds: int) -> None:
+    def run(self, rounds: int, print_rounds: bool = False) -> None:
+        if print_rounds:
+            print(self.strategy_string)
         for k in range(1, rounds + 1):
-            print(f'Round {k}')
+            if print_rounds:
+                print(f'Round {k}')
+
+            self.payoffs_by_round.append([])
             for p in self.providers:
+                p.update_volume_quality_actions()
+
                 t = trust_score_delta[p.quality] + trust_score_delta[p.volume]
                 if not p.trust_by_round:
                     p.trust_by_round.append(t)
@@ -65,7 +95,9 @@ class Simulation:
                     p.trust_by_round.append(p.trust_by_round[-1] + t)
 
                 payoff = get_payoff(p)
-                print(f'{p.name}, payoff: {payoff}')
+                self.payoffs_by_round[-1].append(payoff)
+                if print_rounds:
+                    print(f'{p.name}, payoff: {payoff}')
 
 
 def trust_score(past_scores, k, chi) -> float:
@@ -95,65 +127,158 @@ def get_payoff(provider: Provider) -> float:
     return min(V + C + B, (V + C + B) * T) + E + Q
 
 
+def print_payoff_matrix(moves: List[str], top_left, top_right, bottom_right):
+    print('                                      Other Provider (O)')
+    print('                               -----------------------------------')
+    print(f'                               | {moves[0]} | {moves[1]} |')
+    print('              ----------------------------------------------------')
+    print(f'Provider (P) | {moves[0]}  |    {top_left}  |    {top_right}     |')
+    print('              ----------------------------------------------------')
+    print(f'             | {moves[1]} |    {list(reversed(top_right))}    |    {bottom_right}       |')
+    print('              ----------------------------------------------------')
+
+
 if __name__ == '__main__':
-    print('P (V_low, Q_low), OP (V_low, Q_low)')
-    s = Simulation(chi=CHI, providers=[
-            Provider('P', VolumeAction.LOW, QualityAction.LOW),
-            Provider('OP', VolumeAction.LOW, QualityAction.LOW),
-        ],
-    )
-
-    s.run(4)
-    print()
-
-    print('P (V_low, Q_low), OP (V_low, Q_high)')
-    s = Simulation(chi=CHI, providers=[
-            Provider('P', VolumeAction.LOW, QualityAction.LOW),
-            Provider('OP', VolumeAction.LOW, QualityAction.HIGH),
-        ],
-    )
-
-    s.run(4)
-    print()
-
-    print('P (V_low, Q_high), OP (V_low, Q_high)')
-    s = Simulation(chi=CHI, providers=[
-            Provider('P', VolumeAction.LOW, QualityAction.HIGH),
-            Provider('OP', VolumeAction.LOW, QualityAction.HIGH),
-        ],
-    )
-
-    s.run(4)
-    print()
 
     ###########################################################################
+    print('Everyone plays V_low, 4 rounds, no changing strategies')
+    rounds = 4
 
-    print('P (V_high, Q_low), OP (V_high, Q_low)')
-    s = Simulation(chi=CHI, providers=[
-            Provider('P', VolumeAction.HIGH, QualityAction.LOW),
-            Provider('OP', VolumeAction.HIGH, QualityAction.LOW),
+    s = Simulation(
+        chi=CHI,
+        providers=[
+            Provider('P', [(VolumeAction.LOW, None)], [(QualityAction.LOW, None)]),
+            Provider('OP', [(VolumeAction.LOW, None)], [(QualityAction.LOW, None)]),
         ],
+        strategy_string='P (V_low, Q_low), OP (V_low, Q_low)',
     )
 
-    s.run(4)
-    print()
+    s.run(rounds)
+    top_left = s.payoffs_by_round[-1]
 
-    print('P (V_high, Q_low), OP (V_high, Q_high)')
-    s = Simulation(chi=CHI, providers=[
-            Provider('P', VolumeAction.HIGH, QualityAction.LOW),
-            Provider('OP', VolumeAction.HIGH, QualityAction.HIGH),
+    s = Simulation(
+        chi=CHI,
+        providers=[
+            Provider('P', [(VolumeAction.LOW, None)], [(QualityAction.LOW, None)]),
+            Provider('OP', [(VolumeAction.LOW, None)], [(QualityAction.HIGH, None)]),
         ],
+        strategy_string='P (V_low, Q_low), OP (V_low, Q_high)',
     )
 
-    s.run(4)
-    print()
+    s.run(rounds)
+    top_right = s.payoffs_by_round[-1]
 
-    print('P (V_high, Q_high), OP (V_high, Q_high)')
-    s = Simulation(chi=CHI, providers=[
-            Provider('P', VolumeAction.HIGH, QualityAction.HIGH),
-            Provider('OP', VolumeAction.HIGH, QualityAction.HIGH),
+    s = Simulation(
+        chi=CHI,
+        providers=[
+            Provider('P', [(VolumeAction.LOW, None)], [(QualityAction.HIGH, None)]),
+            Provider('OP', [(VolumeAction.LOW, None)], [(QualityAction.HIGH, None)]),
         ],
+        strategy_string='P (V_low, Q_high), OP (V_low, Q_high)',
     )
 
-    s.run(4)
-    print()
+    s.run(rounds)
+    bottom_right = s.payoffs_by_round[-1]
+
+    print_payoff_matrix(
+        ['(V_low, Q_low)', '(V_low, Q_high)'],
+        top_left, top_right, bottom_right,
+    )
+
+    ###########################################################################
+    print('Everyone plays V_high, 4 rounds, no changing strategies')
+    rounds = 4
+
+    s = Simulation(
+        chi=CHI,
+        providers=[
+            Provider('P', [(VolumeAction.HIGH, None)], [(QualityAction.LOW, None)]),
+            Provider('OP', [(VolumeAction.HIGH, None)], [(QualityAction.LOW, None)]),
+        ],
+        strategy_string='P (V_high, Q_low), OP (V_high, Q_low)',
+    )
+
+    s.run(rounds)
+    top_left = s.payoffs_by_round[-1]
+
+    s = Simulation(
+        chi=CHI,
+        providers=[
+            Provider('P', [(VolumeAction.HIGH, None)], [(QualityAction.LOW, None)]),
+            Provider('OP', [(VolumeAction.HIGH, None)], [(QualityAction.HIGH, None)]),
+        ],
+        strategy_string='P (V_high, Q_low), OP (V_high, Q_high)',
+    )
+
+    s.run(rounds)
+    top_right = s.payoffs_by_round[-1]
+
+    s = Simulation(
+        chi=CHI,
+        providers=[
+            Provider('P', [(VolumeAction.HIGH, None)], [(QualityAction.HIGH, None)]),
+            Provider('OP', [(VolumeAction.HIGH, None)], [(QualityAction.HIGH, None)]),
+        ],
+        strategy_string='P (V_high, Q_high), OP (V_high, Q_high)',
+    )
+
+    s.run(rounds)
+    bottom_right = s.payoffs_by_round[-1]
+
+    print_payoff_matrix(
+        ['(V_high, Q_low)', '(V_high, Q_high)'],
+        top_left, top_right, bottom_right,
+    )
+
+    ###########################################################################
+    print('Everyone plays V_low, 4 rounds, P tries to build trust then defect')
+    rounds = 8
+
+    s = Simulation(
+        chi=CHI,
+        providers=[
+            Provider(
+                'P',
+                [(VolumeAction.LOW, 2), (VolumeAction.HIGH, None)],
+                [(QualityAction.HIGH, None)],
+            ),
+            Provider('OP', [(VolumeAction.LOW, None)], [(QualityAction.LOW, None)]),
+        ],
+        strategy_string='P (V_low, Q_low), OP (V_low, Q_low)',
+    )
+
+    s.run(rounds)
+    top_left = s.payoffs_by_round[-1]
+
+    s = Simulation(
+        chi=CHI,
+        providers=[
+            Provider('P', [(VolumeAction.LOW, None)], [(QualityAction.LOW, None)]),
+            Provider('OP', [(VolumeAction.LOW, None)], [(QualityAction.HIGH, None)]),
+        ],
+        strategy_string='P (V_low, Q_low), OP (V_low, Q_high)',
+    )
+
+    s.run(rounds)
+    top_right = s.payoffs_by_round[-1]
+
+    s = Simulation(
+        chi=CHI,
+        providers=[
+            Provider(
+                'P',
+                [(VolumeAction.LOW, 2), (VolumeAction.HIGH, None)],
+                [(QualityAction.HIGH, None)],
+            ),
+            Provider('OP', [(VolumeAction.LOW, None)], [(QualityAction.HIGH, None)]),
+        ],
+        strategy_string='P (V_low, Q_high), OP (V_low, Q_high)',
+    )
+
+    s.run(rounds)
+    bottom_right = s.payoffs_by_round[-1]
+
+    print_payoff_matrix(
+        ['(V_low, Q_low)', '(V_low, Q_high)'],
+        top_left, top_right, bottom_right,
+    )

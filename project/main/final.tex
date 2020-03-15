@@ -182,7 +182,7 @@ Trust scores are computed using a discounted reputation value. Each provider has
 
 The change in trust ranking for any single round is determined by the provider decisions during that round, as reported through quality metrics and patient outcomes surveys. If these mechanisms are properly designed then desirable behavior should increase the trust ranking, while undesirable/uncooperative behavior decreases it. As such it is expected that for any period, $Q_{high} \Rightarrow +\Delta t$, $Q_{low} \Rightarrow -\Delta t$, and $V_{high} \Rightarrow -\Delta t$.
 
-The \textbf{trust score} $T$ for the current period $k$ is defined as a summation across all of that providers trust rankings for every period $1 \dots k$ and scaled such that earlier time periods are exponentially discounted. The final trust score is based on how close the providers discounted trust ranking sum is to the maximum possible trust ranking $t_{max}$ (assuming perfect behavior for every round up to $k$), multiplied by a scale factor $\chi$. The scale factor $\chi$ can be thought of the percentage of $t_{max}$ that a provider must have in order to be considered full trustworthy. This produces a value $T$ for the current round that is in the interval $[0, 1]$. The full formula is as follows:
+The \textbf{trust score} $T$ for the current period $k$ is defined as a summation across all of that providers trust rankings for every period $1 \dots k$ and scaled such that earlier time periods are exponentially discounted. The final trust score is based on how close the providers discounted trust ranking sum is to the maximum possible trust ranking $t_{max}$ (assuming perfect behavior for every round up to $k$), multiplied by a scale factor $\chi$. The scale factor $\chi$ can be thought of the percentage of $t_{max}$ that a provider must have in order to be considered fully trustworthy. This produces a value $T$ for the current round that is in the interval $[0, 1]$. The full formula is as follows:
 
 \begin{equation}
     T = \min \left( 1, \frac{\sum_{i=1}^k t_i^{i / k}} {t_{max} * \chi} \right)
@@ -202,6 +202,8 @@ It can be shown, after making some assumptions for the payoff variables in line 
     \item \textbf{Reputation influenced rewards} - Past bad behavior strongly influences outcomes with undesirable actions resulting in extreme low payoff. It should be noted that this model results in negative payoffs, which would likely be impossible to implement in reality.
 \end{itemize}
 
+Additional simulations were run to validate that under this model providers could not behave well for several rounds before defecting and choosing high payoff actions (i.e. $V_{low}$) without damaging future earnings. These results are included in the simulation but not described here.
+
 \begin{table}[H]
 \centering
   \setlength{\extrarowheight}{2pt}
@@ -211,7 +213,7 @@ It can be shown, after making some assumptions for the payoff variables in line 
     \multirow{2}*{Provider (P)}  & $(V_{low}, Q_{low})$ & $(-29, -29)$ & $(-29, 9)$ \\\cline{2-4}
     & $(V_{low}, Q_{high})$ & $(9, -29)$ & $(9, 9)$ \\\cline{2-4}
   \end{tabular}
-\caption{Payoff matrix showing outcomes for the main provider (P) and other providers in the network (O) after the fourth period using the Provider Trust Network Model. The score for the row player is listed first. Assume that all providers play $V_{low}$ which is set to simply $0$, and that the other parameters are set to: $Q_{low} = 2, Q_{high} = 4, E_{Q_{low}} = -1, E_{Q_{high}} = 1, C_{Q_{low}} = 1, C_{Q_{high}} = 3$. Trust rankings are adjusted per period by applying these change values based on the provider actions: $Q_{low} \Rightarrow -\Delta 2$, $Q_{high} \Rightarrow +\Delta 2$, $V_{low} \Rightarrow \Delta 0$, $V_{high} \Rightarrow -\Delta 2$. Payoffs are calculated using Equation \ref{eq:ptnm}. There is a unique pure Nash equilibrium outcome when both providers play $(V_{low}, Q_{high})$, it is also a Pareto optimal outcome.}
+\caption{Payoff matrix showing outcomes for the main provider (P) and other providers in the network (O) after the fourth period using the Provider Trust Network Model. The score for the row player is listed first. Assume that all providers play $V_{low}$ which is set to simply $0$, and that the other parameters are set to: $Q_{low} = 2, Q_{high} = 4, E_{Q_{low}} = -1, E_{Q_{high}} = 1, C_{Q_{low}} = 1, C_{Q_{high}} = 3$. Trust rankings are adjusted per period by applying these change values based on the provider actions: $Q_{low} \Rightarrow -\Delta 2$, $Q_{high} \Rightarrow +\Delta 2$, $V_{low} \Rightarrow \Delta 0$, $V_{high} \Rightarrow -\Delta 3$. Payoffs are calculated using Equation \ref{eq:ptnm}. There is a unique pure Nash equilibrium outcome when both providers play $(V_{low}, Q_{high})$, it is also a Pareto optimal outcome.}
 \label{table:ptnlow}
 \end{table}
 
@@ -221,10 +223,10 @@ It can be shown, after making some assumptions for the payoff variables in line 
   \begin{tabular}{*{4}{c|}}
     \multicolumn{2}{c}{} & \multicolumn{2}{c}{Other Providers (O)}\\\cline{3-4}
     \multicolumn{1}{c}{} &  & $(V_{high}, Q_{low})$  & $(V_{high}, Q_{high})$ \\\cline{2-4}
-    \multirow{2}*{Provider (P)}  & $(V_{high}, Q_{low})$ & $(-93, -93)$ & $(-93, 3)$ \\\cline{2-4}
-    & $(V_{high}, Q_{high})$ & $(3, -93)$ & $(3, 3)$ \\\cline{2-4}
+    \multirow{2}*{Provider (P)}  & $(V_{high}, Q_{low})$ & $(-117, -117)$ & $(-117, -29)$ \\\cline{2-4}
+    & $(V_{high}, Q_{high})$ & $(-29, -117)$ & $(-29, -29)$ \\\cline{2-4}
   \end{tabular}
-    \caption{Payoff matrix showing outcomes for the main provider (P) and other providers in the network (O) after the fourth period using the Provider Trust Network Model. The score for the row player is listed first. Assume that all providers play $V_{high}$ which is set to a large payoff of $5$ to represent this models fee-for-service component, and that the other parameters and trust ranking change values are equal to their values in \ref{table:ptnlow}. There is a unique pure Nash equilibrium outcome when both providers play $(V_{high}, Q_{high})$, it is also a Pareto optimal outcome (assuming Volume cannot be changed). However the payoff is lower than if providers choose $V_{low}$ as in \ref{table:ptnlow}.}
+    \caption{Payoff matrix showing outcomes for the main provider (P) and other providers in the network (O) after the fourth period using the Provider Trust Network Model. The score for the row player is listed first. Assume that all providers play $V_{high}$ which is set to a large payoff of $5$ to represent this models fee-for-service component, and that the other parameters and trust ranking change values are equal to their values in \ref{table:ptnlow}. There is a unique pure Nash equilibrium outcome when both providers play $(V_{high}, Q_{high})$, it is also a Pareto optimal outcome (assuming Volume cannot be changed). However the payoff is lower than if providers choose $V_{low}$ as in Table \ref{table:ptnlow}.}
 \label{table:ptnhigh}
 \end{table}
 
