@@ -4,6 +4,9 @@ Network Model.
 
 To execute run:
     python3 provider_trust_network.py
+
+For detailed explanation see the full paper, Sections 4.1 + 4.2, especially
+equations 5, 6, and 7.
 """
 from enum import Enum
 from typing import List, Tuple
@@ -20,6 +23,8 @@ class QualityAction(Enum):
     LOW = 2
 
 
+# Mappings from behavior to the per-round payoff. For more information
+# see caption for Table 2.
 volume_payoff = {VolumeAction.HIGH: 5, VolumeAction.LOW: 0}
 quality_payoff = {QualityAction.HIGH: 2, QualityAction.LOW: 4}
 cap_rate = {QualityAction.HIGH: 3, QualityAction.LOW: 1}
@@ -34,6 +39,9 @@ trust_score_delta = {
 
 
 class Provider:
+    """
+    Represents a single provider agent during simulation runs.
+    """
     def __init__(
         self, name: str,
         # Tuple of which action to take for how many rounds.
@@ -88,6 +96,7 @@ class Simulation:
             for p in self.providers:
                 p.update_volume_quality_actions()
 
+                # See Equation 5
                 t = trust_score_delta[p.quality] + trust_score_delta[p.volume]
                 if not p.trust_by_round:
                     p.trust_by_round.append(t)
@@ -101,6 +110,12 @@ class Simulation:
 
 
 def trust_score(past_scores, k, chi) -> float:
+    """
+    Computes an exponentially discounted reputation score based on historical
+    provider trust rankings.
+
+    See Equation 7
+    """
     # Tmax is the highest value possible if a provider behaved perfectly every round.
     t_max = sum(
         trust_score_delta[QualityAction.HIGH] + trust_score_delta[VolumeAction.LOW]
@@ -116,6 +131,8 @@ def trust_score(past_scores, k, chi) -> float:
 def get_payoff(provider: Provider) -> float:
     """
     Return the provider payoff for round k.
+
+    See Equation 5
     """
     V = volume_payoff[provider.volume]
     C = cap_rate[provider.quality]
@@ -128,6 +145,9 @@ def get_payoff(provider: Provider) -> float:
 
 
 def print_payoff_matrix(moves: List[str], top_left, top_right, bottom_right):
+    """
+    Outputs a pretty payoff matrix to stdout.
+    """
     print('                                      Other Provider (O)')
     print('                               -----------------------------------')
     print(f'                               | {moves[0]} | {moves[1]} |')
@@ -139,8 +159,6 @@ def print_payoff_matrix(moves: List[str], top_left, top_right, bottom_right):
 
 
 if __name__ == '__main__':
-
-    ###########################################################################
     print('Everyone plays V_low, 4 rounds, no changing strategies')
     rounds = 4
 
